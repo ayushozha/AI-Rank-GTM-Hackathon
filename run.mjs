@@ -35,7 +35,7 @@ if (!existsSync(resultsPath)) {
 // 2. Score
 const scan = JSON.parse(readFileSync(resultsPath, 'utf8'))
 const s = score(scan)
-console.log(`▶ share of AI voice for ${s.target}: ${s.shareOfVoice}% (${s.targetWins}/${s.scannedQueries})`)
+console.log(`▶ share of AI voice for ${s.target}: ${s.shareOfVoice}% (cited ${s.citedCount}/${s.scannedQueries})`)
 console.log(`▶ losing queries: ${s.losingQueries.length}`)
 
 // 3. Reddit queue — SAI cloud agent first, public search fallback

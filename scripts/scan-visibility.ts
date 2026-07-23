@@ -183,8 +183,16 @@ for (let i = 0; i < queries.length; i++) {
   openUrl(url)
   await sleep(5000)
 
+  // The scan browser can die mid-run (crash, user closes it) — re-resolve the
+  // real pid each query, and relaunch once if it's gone.
   let bound: { tree: AccessibilityTree; win: Window } | null = null
   for (let attempt = 0; attempt < 10 && !bound; attempt++) {
+    if (!scanBrowserPids().length) {
+      console.log('  scan browser gone — relaunching')
+      openUrl(url)
+      await sleep(6000)
+    }
+    browserPid = scanBrowserPids()[0] ?? browserPid
     bound = bindTree(query)
     if (!bound) await sleep(2000)
   }
