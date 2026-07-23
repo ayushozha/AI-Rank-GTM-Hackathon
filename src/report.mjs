@@ -8,9 +8,9 @@ const esc = (s) =>
 function verdictLine(s) {
   const name = s.targetName ?? s.target
   if (s.scannedQueries === 0) return `No signal yet for ${name}.`
-  if (s.shareOfVoice === 0) return `The AI doesn't know ${name} exists.`
-  if (s.shareOfVoice < 40) return `${name} is barely on the AI's radar.`
-  if (s.shareOfVoice < 75) return `${name} is in the conversation — not owning it.`
+  if (s.visibilityScore === 0) return `The AI doesn't know ${name} exists.`
+  if (s.visibilityScore < 40) return `${name} is barely on the AI's radar.`
+  if (s.visibilityScore < 75) return `${name} is in the conversation — not owning it.`
   return `${name} owns its niche's AI answers.`
 }
 
@@ -184,8 +184,8 @@ export function renderReport(s, queue, meta = {}) {
   </header>
 
   <div class="tiles">
-    <div class="tile hero reveal" style="animation-delay:.32s"><div class="num">${s.shareOfVoice}<span class="den">%</span></div><div class="cap">share of AI voice for <b>${esc(s.target)}</b> — answers citing or naming ${esc(s.targetName ?? s.target)}</div></div>
-    <div class="tile reveal" style="animation-delay:.40s"><div class="num">${s.citedCount}<span class="den">/${s.scannedQueries}</span></div><div class="cap">answers citing <b>${esc(s.target)}</b> as a source</div></div>
+    <div class="tile hero reveal" style="animation-delay:.32s"><div class="num">${s.visibilityScore}<span class="den">%</span></div><div class="cap">AI visibility for <b>${esc(s.target)}</b> — answers that cite or name ${esc(s.targetName ?? s.target)} (${s.visibleCount} of ${s.scannedQueries})</div></div>
+    <div class="tile reveal" style="animation-delay:.40s"><div class="num">${s.shareOfVoice}<span class="den">%</span></div><div class="cap">share of AI voice — <b>${esc(s.target)}</b> holds ${s.targetCitations} of the ${s.totalCitations} citations captured</div></div>
     <div class="tile reveal" style="animation-delay:.48s"><div class="word">${esc(s.leaderboard[0]?.domain ?? '—')}</div><div class="cap">most-cited domain in the niche (${s.leaderboard[0]?.count ?? 0} citations)</div></div>
   </div>
 

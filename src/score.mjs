@@ -35,12 +35,19 @@ export function score(scan) {
   const scanned = perQuery.filter((r) => !r.warning)
   const cited = perQuery.filter((r) => r.targetCited).length
   const visible = perQuery.filter((r) => r.targetCited || r.targetMentioned).length
+  // True share of voice: the target's citations as a slice of ALL citations
+  // captured. Distinct from visibility (% of answers you appear in at all).
+  const totalCitations = leaderboard.reduce((a, d) => a + d.count, 0)
+  const targetCitations = leaderboard.filter((d) => d.kind === 'target').reduce((a, d) => a + d.count, 0)
   return {
     target,
     targetName: scan.config.target.name,
     competitors,
     engine: scan.config.engine,
-    shareOfVoice: scanned.length ? Math.round((100 * visible) / scanned.length) : 0,
+    visibilityScore: scanned.length ? Math.round((100 * visible) / scanned.length) : 0,
+    shareOfVoice: totalCitations ? Math.round((1000 * targetCitations) / totalCitations) / 10 : 0,
+    totalCitations,
+    targetCitations,
     citedCount: cited,
     visibleCount: visible,
     totalQueries: perQuery.length,
