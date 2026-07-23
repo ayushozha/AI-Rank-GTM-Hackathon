@@ -1,0 +1,15 @@
+{
+  "name": "ai-rank",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI Rank — measures your share of AI voice (who gets cited by AI answer engines) and closes the loop with an SAI-agent-powered Reddit approval queue.",
+  "scripts": {
+    "scan": "simulang run scripts/scan-visibility.ts",
+    "report": "node run.mjs --no-scan",
+    "all": "node run.mjs"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}

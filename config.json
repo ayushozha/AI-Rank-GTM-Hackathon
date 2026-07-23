@@ -1,0 +1,40 @@
+{
+  "target": {
+    "domain": "hijenny.ai",
+    "name": "HiJenny",
+    "pitch": "Jenny — free home management platform: home inventory, warranty & service records, contractor bid comparison, renovation project tracking."
+  },
+  "competitors": [
+    "homezada.com",
+    "centriq.io",
+    "thumbtack.com",
+    "angi.com",
+    "houzz.com",
+    "homeadvisor.com"
+  ],
+  "queries": [
+    "best app to organize home maintenance records and warranties",
+    "how do I keep track of home renovation projects and contractor bids",
+    "app to track home appliance warranties and service history",
+    "best home inventory app for homeowners 2026",
+    "how to organize receipts and documents for a home remodel",
+    "tools to compare contractor quotes for a renovation",
+    "home maintenance schedule app recommendations",
+    "software to keep all my home repair records in one place"
+  ],
+  "engine": {
+    "name": "Perplexity",
+    "searchUrl": "https://www.perplexity.ai/search?q="
+  },
+  "ignoreDomains": [
+    "perplexity.ai",
+    "perplexity.com",
+    "pplx.ai",
+    "google.com",
+    "gstatic.com",
+    "googleapis.com",
+    "cloudflare.com",
+    "apple.com",
+    "microsoft.com"
+  ]
+}
