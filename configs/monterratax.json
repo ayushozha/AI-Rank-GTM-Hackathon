@@ -1,0 +1,41 @@
+{
+  "target": {
+    "domain": "monterratax.com",
+    "name": "Monterra Tax",
+    "market": "short-term rental tax compliance",
+    "pitch": "Monterra Tax — AI-native short-term rental occupancy tax platform: real-time multi-jurisdiction rate monitoring, automated calculation, filing, and remittance for hosts, property managers, and accounting firms, with PMS integrations (Hostaway, Guesty, Hostfully, OwnerRez, and more)."
+  },
+  "competitors": [
+    "avalara.com",
+    "taxjar.com",
+    "granicus.com",
+    "hostaway.com",
+    "guesty.com",
+    "lodgify.com",
+    "ownerrez.com"
+  ],
+  "queries": [
+    "best software for short-term rental occupancy tax compliance",
+    "how to automate airbnb and vrbo lodging tax filing",
+    "occupancy tax software for multi-jurisdiction property managers",
+    "short-term rental tax remittance automation platform",
+    "how to calculate lodging tax rates across US jurisdictions",
+    "best tools to file occupancy taxes for vacation rental hosts",
+    "PMS integrated occupancy tax compliance software",
+    "short-term rental tax compliance platform for accounting firms"
+  ],
+  "engine": {
+    "name": "Perplexity",
+    "searchUrl": "https://www.perplexity.ai/search?q="
+  },
+  "ignoreDomains": [
+    "perplexity.ai",
+    "perplexity.com",
+    "pplx.ai",
+    "google.com",
+    "gstatic.com",
+    "googleapis.com",
+    "apple.com",
+    "microsoft.com"
+  ]
+}
