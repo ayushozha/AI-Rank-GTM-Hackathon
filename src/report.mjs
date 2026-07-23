@@ -178,14 +178,14 @@ export function renderReport(s, queue, meta = {}) {
   </div>
 
   <header class="masthead">
-    <div class="brand reveal" style="animation-delay:.08s">AI Rank · share of AI voice</div>
+    <div class="brand reveal" style="animation-delay:.08s">AI Rank · share of AI voice · ${esc(s.target)}</div>
     <h1 class="reveal" style="animation-delay:.16s">${esc(verdictLine(s))}</h1>
-    <p class="dek reveal" style="animation-delay:.24s">When buyers ask ${esc(s.engine?.name ?? s.engine ?? 'an AI engine')} the ${s.scannedQueries} questions that define this niche, this is who the answers actually send them to — measured in a live browser session, with receipts.</p>
+    <p class="dek reveal" style="animation-delay:.24s">When buyers ask ${esc(s.engine?.name ?? s.engine ?? 'an AI engine')} the ${s.scannedQueries} questions that define this niche, this is who the answers actually send them to — measured for <b>${esc(s.targetName ?? s.target)}</b> (<b>${esc(s.target)}</b>) in a live browser session, with receipts.</p>
   </header>
 
   <div class="tiles">
-    <div class="tile hero reveal" style="animation-delay:.32s"><div class="num">${s.shareOfVoice}<span class="den">%</span></div><div class="cap">share of AI voice — answers citing or naming <b>${esc(s.target)}</b></div></div>
-    <div class="tile reveal" style="animation-delay:.40s"><div class="num">${s.citedCount}<span class="den">/${s.scannedQueries}</span></div><div class="cap">answers citing ${esc(s.target)} as a source</div></div>
+    <div class="tile hero reveal" style="animation-delay:.32s"><div class="num">${s.shareOfVoice}<span class="den">%</span></div><div class="cap">share of AI voice for <b>${esc(s.target)}</b> — answers citing or naming ${esc(s.targetName ?? s.target)}</div></div>
+    <div class="tile reveal" style="animation-delay:.40s"><div class="num">${s.citedCount}<span class="den">/${s.scannedQueries}</span></div><div class="cap">answers citing <b>${esc(s.target)}</b> as a source</div></div>
     <div class="tile reveal" style="animation-delay:.48s"><div class="word">${esc(s.leaderboard[0]?.domain ?? '—')}</div><div class="cap">most-cited domain in the niche (${s.leaderboard[0]?.count ?? 0} citations)</div></div>
   </div>
 
