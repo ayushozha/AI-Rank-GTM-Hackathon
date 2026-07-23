@@ -7,14 +7,17 @@ const esc = (s) =>
 
 function verdictLine(s) {
   const name = s.targetName ?? s.target
+  const market = s.market
   if (s.scannedQueries === 0) return `No signal yet for ${name}.`
   if (s.visibilityScore === 0) return `The AI doesn't know ${name} exists.`
   if (s.visibilityScore < 40) return `${name} is barely on the AI's radar.`
   if (s.visibilityScore < 75) return `${name} is in the conversation — not owning it.`
-  return `${name} owns its niche's AI answers.`
+  return market ? `${name} owns AI answers in ${market}.` : `${name} owns its niche's AI answers.`
 }
 
 export function renderReport(s, queue, meta = {}) {
+  const market = s.market || 'this niche'
+  const marketTitle = s.market || 'share of AI voice'
   const maxCount = Math.max(1, ...s.leaderboard.map((d) => d.count))
   const bars = s.leaderboard
     .slice(0, 14)
@@ -178,19 +181,19 @@ export function renderReport(s, queue, meta = {}) {
   </div>
 
   <header class="masthead">
-    <div class="brand reveal" style="animation-delay:.08s">AI Rank · share of AI voice · ${esc(s.target)}</div>
+    <div class="brand reveal" style="animation-delay:.08s">AI Rank · ${esc(marketTitle)} · ${esc(s.target)}</div>
     <h1 class="reveal" style="animation-delay:.16s">${esc(verdictLine(s))}</h1>
-    <p class="dek reveal" style="animation-delay:.24s">When buyers ask ${esc(s.engine?.name ?? s.engine ?? 'an AI engine')} the ${s.scannedQueries} questions that define this niche, this is who the answers actually send them to — measured for <b>${esc(s.targetName ?? s.target)}</b> (<b>${esc(s.target)}</b>) in a live browser session, with receipts.</p>
+    <p class="dek reveal" style="animation-delay:.24s">When buyers ask ${esc(s.engine?.name ?? s.engine ?? 'an AI engine')} the ${s.scannedQueries} questions that define <b>${esc(market)}</b>, this is who the answers actually send them to — measured for <b>${esc(s.targetName ?? s.target)}</b> (<b>${esc(s.target)}</b>) in a live browser session, with receipts.</p>
   </header>
 
   <div class="tiles">
     <div class="tile hero reveal" style="animation-delay:.32s"><div class="num">${s.visibilityScore}<span class="den">%</span></div><div class="cap">AI visibility for <b>${esc(s.target)}</b> — answers that cite or name ${esc(s.targetName ?? s.target)} (${s.visibleCount} of ${s.scannedQueries})</div></div>
-    <div class="tile reveal" style="animation-delay:.40s"><div class="num">${s.shareOfVoice}<span class="den">%</span></div><div class="cap">share of AI voice — <b>${esc(s.target)}</b> holds ${s.targetCitations} of the ${s.totalCitations} citations captured</div></div>
-    <div class="tile reveal" style="animation-delay:.48s"><div class="word">${esc(s.leaderboard[0]?.domain ?? '—')}</div><div class="cap">most-cited domain in the niche (${s.leaderboard[0]?.count ?? 0} citations)</div></div>
+    <div class="tile reveal" style="animation-delay:.40s"><div class="num">${s.shareOfVoice}<span class="den">%</span></div><div class="cap">share of voice in <b>${esc(market)}</b> — <b>${esc(s.target)}</b> holds ${s.targetCitations} of the ${s.totalCitations} citations captured</div></div>
+    <div class="tile reveal" style="animation-delay:.48s"><div class="word">${esc(s.leaderboard[0]?.domain ?? '—')}</div><div class="cap">most-cited domain in ${esc(market)} (${s.leaderboard[0]?.count ?? 0} citations)</div></div>
   </div>
 
   <section>
-    <h2>Citation leaderboard — <b>who owns this niche's AI answers</b></h2>
+    <h2>Citation leaderboard — <b>who owns AI answers in ${esc(market)}</b></h2>
     ${bars || '<p class="hint">No citations captured — run the scan first.</p>'}
     <div class="legend reveal" style="animation-delay:.9s"><span class="l-t">${esc(s.target)} (you)</span><span class="l-c">competitor</span><span class="l-o">other sources</span></div>
   </section>

@@ -41,10 +41,15 @@ if (!existsSync(resultsPath)) {
   process.exit(1)
 }
 
-// 2. Score
+// 2. Score — prefer live config fields (e.g. market) over stale scan snapshot
 const scan = JSON.parse(readFileSync(resultsPath, 'utf8'))
+scan.config = {
+  ...scan.config,
+  ...cfg,
+  target: { ...(scan.config?.target ?? {}), ...(cfg.target ?? {}) },
+}
 const s = score(scan)
-console.log(`▶ ${s.target}: AI visibility ${s.visibilityScore}% (cited ${s.citedCount}/${s.scannedQueries}) · share of voice ${s.shareOfVoice}% (${s.targetCitations}/${s.totalCitations} citations)`)
+console.log(`▶ ${s.target}${s.market ? ` [${s.market}]` : ''}: AI visibility ${s.visibilityScore}% (cited ${s.citedCount}/${s.scannedQueries}) · share of voice ${s.shareOfVoice}% (${s.targetCitations}/${s.totalCitations} citations)`)
 console.log(`▶ losing queries: ${s.losingQueries.length}`)
 
 // 3. Reddit queue — SAI cloud agent first, public search fallback

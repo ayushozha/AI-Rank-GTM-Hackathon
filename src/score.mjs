@@ -42,6 +42,7 @@ export function score(scan) {
   return {
     target,
     targetName: scan.config.target.name,
+    market: scan.config.target.market ?? scan.config.market ?? null,
     competitors,
     engine: scan.config.engine,
     visibilityScore: scanned.length ? Math.round((100 * visible) / scanned.length) : 0,

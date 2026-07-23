@@ -2,6 +2,7 @@
   "target": {
     "domain": "wasmer.io",
     "name": "Wasmer",
+    "market": "AI infrastructure",
     "pitch": "Wasmer — WebAssembly runtime, registry, and Wasmer Edge: deploy apps (WordPress, Django, Next.js) universally with instant startup, secure isolation, and far cheaper autoscaling than containers."
   },
   "competitors": [
