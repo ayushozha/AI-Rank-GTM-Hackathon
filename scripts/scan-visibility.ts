@@ -24,13 +24,16 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const config = JSON.parse(readFileSync(resolve(ROOT, 'config.json'), 'utf8'))
+// SCAN_CONFIG / SCAN_LIMIT env vars (the simulang CLI intercepts --flags)
+const configPath = process.env.SCAN_CONFIG ? resolve(ROOT, process.env.SCAN_CONFIG) : resolve(ROOT, 'config.json')
+const config = JSON.parse(readFileSync(configPath, 'utf8'))
 
-// SCAN_LIMIT env var (the simulang CLI intercepts --flags before the script sees them)
 const limit = Number(process.env.SCAN_LIMIT) || Infinity
 const queries: string[] = config.queries.slice(0, limit)
 
-const OUT = resolve(ROOT, 'out')
+// Per-target output dir so reports for different domains don't clobber.
+const slug = String(config.target.domain).replace(/[^a-z0-9]+/gi, '-')
+const OUT = resolve(ROOT, 'out', slug)
 const SHOTS = resolve(OUT, 'shots')
 mkdirSync(SHOTS, { recursive: true })
 
@@ -50,7 +53,9 @@ if (!browserExe) {
   console.error('No Chrome/Edge found. Set SCAN_BROWSER to a Chromium browser exe path.')
   process.exit(1)
 }
-const profileDir = resolve(OUT, 'scan-profile')
+// Shared across targets so the profile stays warm (and killScanBrowser's
+// command-line grep keeps matching).
+const profileDir = resolve(ROOT, 'out', 'scan-profile')
 let browserPid = 0
 
 function openUrl(url: string) {
@@ -267,6 +272,7 @@ for (let i = 0; i < queries.length; i++) {
   // frontmost — focusElement raises it.
   const shotPath = resolve(SHOTS, `q${String(i + 1).padStart(2, '0')}.png`)
   try {
+    if (win.isMinimized()) win.restore()
     const any = tree.find(TraversalOrder.DepthFirst, undefined, undefined, false, 1, false)[0]
     if (any?.refId != null) tree.focusElement(any.refId)
     await sleep(600)

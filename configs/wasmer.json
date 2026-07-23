@@ -1,0 +1,40 @@
+{
+  "target": {
+    "domain": "wasmer.io",
+    "name": "Wasmer",
+    "pitch": "Wasmer — WebAssembly runtime, registry, and Wasmer Edge: deploy apps (WordPress, Django, Next.js) universally with instant startup, secure isolation, and far cheaper autoscaling than containers."
+  },
+  "competitors": [
+    "stackmachine.com",
+    "cloudflare.com",
+    "vercel.com",
+    "fermyon.com",
+    "wasmtime.dev",
+    "fly.io",
+    "netlify.com"
+  ],
+  "queries": [
+    "serverless platform with the fastest cold starts",
+    "how to run untrusted or AI-generated code securely in production",
+    "cheapest way to host a wordpress site with autoscaling",
+    "deploy node.js or python apps to the edge without rewriting code",
+    "webassembly runtime for server side production workloads",
+    "alternatives to docker containers using webassembly",
+    "best infrastructure to deploy AI agents at scale",
+    "serverless hosting that only bills for actual cpu time"
+  ],
+  "engine": {
+    "name": "Perplexity",
+    "searchUrl": "https://www.perplexity.ai/search?q="
+  },
+  "ignoreDomains": [
+    "perplexity.ai",
+    "perplexity.com",
+    "pplx.ai",
+    "google.com",
+    "gstatic.com",
+    "googleapis.com",
+    "apple.com",
+    "microsoft.com"
+  ]
+}
