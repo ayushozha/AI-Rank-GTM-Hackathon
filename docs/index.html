@@ -1,410 +1,128 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Rank · wasmer.io</title>
-<style>
-  :root {
-    color-scheme: dark;
-    --page: #0c0c0b; --surface: #161614; --surface-2: #1d1d1a;
-    --ink: #f4f2ea; --ink-2: #b8b5a6; --muted: #7c7a70;
-    --hairline: #2b2b27; --border: rgba(255,255,255,.08);
-    --target: #3987e5; --competitor: #d95926; --other: #3b3b37;
-    --win: #0ca30c; --loss: #e66767;
-    --serif: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
-    --mono: 'Cascadia Mono', Consolas, 'SF Mono', 'Courier New', monospace;
-  }
-  * { box-sizing: border-box; margin: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font: 16px/1.55 var(--serif); background: var(--page); color: var(--ink);
-    background-image:
-      radial-gradient(1100px 480px at 75% -10%, rgba(57,135,229,.10), transparent 60%),
-      radial-gradient(700px 380px at 8% 12%, rgba(217,89,38,.05), transparent 55%),
-      repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,.006) 3px 4px);
-    padding: 0 20px 96px;
-  }
-  main { max-width: 920px; margin: 0 auto; }
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Rank · GTM Hackathon</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #0c0c0b;
+      --surface: #161614;
+      --ink: #f4f2ea;
+      --ink-2: #b8b5a6;
+      --muted: #7c7a70;
+      --hairline: #2b2b27;
+      --target: #3987e5;
+      --competitor: #d95926;
+      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --mono: "Cascadia Mono", Consolas, "SF Mono", "Courier New", monospace;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      min-height: 100vh;
+      font: 18px/1.55 var(--serif);
+      background: var(--page);
+      color: var(--ink);
+      padding: 56px clamp(24px, 6vw, 96px) 72px;
+    }
+    .brand {
+      font: 12px var(--mono);
+      letter-spacing: .34em;
+      text-transform: uppercase;
+      color: var(--target);
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-size: clamp(34px, 5vw, 52px);
+      line-height: 1.08;
+      font-weight: 500;
+      max-width: 16ch;
+      margin-bottom: 12px;
+    }
+    .dek {
+      color: var(--ink-2);
+      font-style: italic;
+      max-width: 52ch;
+      margin-bottom: 36px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      max-width: 920px;
+    }
+    a.card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-left: 2px solid var(--target);
+      padding: 22px 22px 20px;
+      transition: border-color .15s, transform .15s;
+    }
+    a.card:hover {
+      border-color: rgba(57, 135, 229, .55);
+      transform: translateY(-1px);
+    }
+    a.card.secondary { border-left-color: var(--competitor); }
+    .domain {
+      font: 12px var(--mono);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--target);
+      margin-bottom: 10px;
+    }
+    a.card.secondary .domain { color: var(--competitor); }
+    .card h2 {
+      font: 500 24px/1.2 var(--serif);
+      margin-bottom: 8px;
+    }
+    .card p {
+      color: var(--ink-2);
+      font-size: 15px;
+    }
+    .meta {
+      margin-top: 10px;
+      font: 12px var(--mono);
+      color: var(--muted);
+      letter-spacing: .04em;
+    }
+    footer {
+      margin-top: 40px;
+      font: 12px var(--mono);
+      color: var(--muted);
+      letter-spacing: .08em;
+    }
+  </style>
+</head>
+<body>
+  <div class="brand">AI Rank · GTM Hackathon</div>
+  <h1>Share of AI voice, with receipts.</h1>
+  <p class="dek">Live Perplexity scans for two targets. Open a report for visibility, citation share, the leaderboard, and Reddit close-the-gap drafts.</p>
 
-  .strip {
-    display: flex; flex-wrap: wrap; gap: 8px 22px; padding: 14px 0;
-    border-bottom: 1px solid var(--hairline);
-    font: 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
-  }
-  .strip .live { color: var(--win); }
-  .strip .live::before { content: "●"; margin-right: 6px; animation: pulse 2.4s infinite; }
-  @keyframes pulse { 50% { opacity: .3; } }
-
-  header.masthead { padding: 56px 0 34px; border-bottom: 1px solid var(--hairline); }
-  .brand { font: 12px var(--mono); letter-spacing: .34em; color: var(--target); text-transform: uppercase; }
-  h1 { font-size: clamp(34px, 5.4vw, 56px); line-height: 1.06; font-weight: 500; letter-spacing: -.01em; margin: 14px 0 10px; max-width: 17ch; }
-  .dek { color: var(--ink-2); font-size: 17px; max-width: 58ch; font-style: italic; }
-
-  .tiles { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); margin: 40px 0; }
-  @media (max-width: 700px) { .tiles { grid-template-columns: 1fr; } }
-  .tile { background: var(--surface); padding: 26px 24px 22px; }
-  .tile .num { font: 600 56px/1 var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
-  .tile.hero .num { font-size: 92px; color: var(--target); }
-  .tile .num .den { font-size: .45em; color: var(--muted); font-weight: 400; }
-  .tile .cap { margin-top: 10px; color: var(--ink-2); font-size: 13.5px; }
-  .tile .word { font: 500 26px/1.15 var(--serif); overflow-wrap: anywhere; }
-
-  section { margin: 54px 0; }
-  h2 { font: 11px var(--mono); letter-spacing: .22em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--hairline); padding-bottom: 10px; margin-bottom: 22px; }
-  h2 b { color: var(--ink); font-weight: 400; }
-
-  .bar-row { display: grid; grid-template-columns: 200px 1fr 40px; gap: 12px; align-items: center; padding: 4px 0; }
-  .bar-label { font: 13px var(--mono); color: var(--ink-2); text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .bar-track { border-left: 1px solid var(--hairline); height: 18px; }
-  .bar-fill { display: block; height: 12px; margin-top: 3px; border-radius: 0 4px 4px 0; width: var(--w); animation: grow .8s cubic-bezier(.2,.7,.2,1) backwards; }
-  @keyframes grow { from { width: 0; } }
-  .bar-fill.target { background: var(--target); box-shadow: 0 0 18px rgba(57,135,229,.35); }
-  .bar-fill.competitor { background: var(--competitor); }
-  .bar-fill.other { background: var(--other); }
-  .bar-value { font: 13px var(--mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
-  .legend { display: flex; gap: 20px; margin-top: 16px; font: 12px var(--mono); color: var(--ink-2); }
-  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 7px; vertical-align: -1px; }
-  .legend .l-t::before { background: var(--target); } .legend .l-c::before { background: var(--competitor); } .legend .l-o::before { background: var(--other); }
-
-  .scroll { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  th { font: 10px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--muted); text-align: left; font-weight: 400; padding: 0 14px 10px 0; border-bottom: 1px solid var(--hairline); }
-  td { padding: 12px 14px 12px 0; border-bottom: 1px solid var(--hairline); vertical-align: top; }
-  td.q { font-style: italic; max-width: 30ch; }
-  .mono { font-family: var(--mono); font-size: 12px; } .dim { color: var(--ink-2); } .more { color: var(--muted); }
-  a { color: var(--target); text-decoration: none; border-bottom: 1px solid rgba(57,135,229,.35); }
-  a:hover { border-bottom-color: var(--target); }
-
-  .stamp { font: 10px var(--mono); letter-spacing: .16em; padding: 4px 8px; border: 1px solid; border-radius: 3px; white-space: nowrap; }
-  .stamp.win { color: var(--win); border-color: rgba(12,163,12,.5); }
-  .stamp.mention { color: var(--ink-2); border-color: var(--border); }
-  .stamp.loss { color: var(--loss); border-color: rgba(230,103,103,.45); }
-  .stamp.na { color: var(--muted); border-color: var(--border); }
-  .stamp.agent { color: var(--target); border-color: rgba(57,135,229,.5); }
-
-  .card { background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--competitor); padding: 20px 22px; margin-bottom: 14px; }
-  .card header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
-  .card .sub { font-size: 12px; color: var(--competitor); }
-  .card h3 { font-weight: 500; font-size: 19px; line-height: 1.3; margin-bottom: 6px; }
-  .card h3 a { border-bottom-color: transparent; color: var(--ink); } .card h3 a:hover { color: var(--target); }
-  .card .why { color: var(--ink-2); font-size: 13.5px; margin-bottom: 12px; }
-  textarea { width: 100%; font: 13px/1.6 var(--mono); color: var(--ink); background: var(--page); border: 1px solid var(--hairline); border-radius: 4px; padding: 12px; resize: vertical; }
-  textarea:focus { outline: 1px solid var(--target); }
-  .card-actions { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
-  button { font: 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; padding: 8px 14px; border-radius: 3px; border: 1px solid var(--target); background: transparent; color: var(--target); cursor: pointer; transition: background .15s, color .15s; }
-  button:hover { background: var(--target); color: var(--page); }
-  .hint { color: var(--muted); font-size: 12px; font-style: italic; }
-
-  footer { border-top: 1px solid var(--hairline); padding-top: 18px; font: 12px/1.7 var(--mono); color: var(--muted); }
-
-  .reveal { animation: rise .6s cubic-bezier(.2,.7,.2,1) backwards; }
-  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
-  @media (prefers-reduced-motion: reduce) { .reveal, .bar-fill, .strip .live::before { animation: none !important; } }
-
-  #tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--page); font: 12px var(--mono); padding: 5px 9px; border-radius: 4px; display: none; z-index: 9; }
-</style></head><body>
-<div id="tip"></div>
-<main>
-  <div class="strip reveal">
-    <span class="live">live scan</span>
-    <span>Perplexity</span>
-    <span>8/8 queries</span>
-    <span>accessibility-tree capture · simulang</span>
-    <span>7/22/2026, 7:49:44 PM</span>
+  <div class="grid">
+    <a class="card" href="./wasmer/">
+      <div class="domain">wasmer.io</div>
+      <h2>Wasmer</h2>
+      <p>AI visibility 25% · share of AI voice 1.3% (1 of 77 citations).</p>
+      <div class="meta">8 queries · 1 cited · open report →</div>
+    </a>
+    <a class="card" href="./stackmachine/">
+      <div class="domain">stackmachine.com</div>
+      <h2>StackMachine</h2>
+      <p>AI visibility 0% · share of AI voice 0% (0 of 73 citations).</p>
+      <div class="meta">8 queries · 0 cited · open report →</div>
+    </a>
+    <a class="card secondary" href="./slides.html">
+      <div class="domain">pitch deck</div>
+      <h2>Slides</h2>
+      <p>3-minute GTM hackathon walkthrough for the demo.</p>
+      <div class="meta">open slides →</div>
+    </a>
   </div>
 
-  <header class="masthead">
-    <div class="brand reveal" style="animation-delay:.08s">AI Rank · share of AI voice · wasmer.io</div>
-    <h1 class="reveal" style="animation-delay:.16s">Wasmer is barely on the AI&#39;s radar.</h1>
-    <p class="dek reveal" style="animation-delay:.24s">When buyers ask Perplexity the 8 questions that define this niche, this is who the answers actually send them to — measured for <b>Wasmer</b> (<b>wasmer.io</b>) in a live browser session, with receipts.</p>
-  </header>
-
-  <div class="tiles">
-    <div class="tile hero reveal" style="animation-delay:.32s"><div class="num">25<span class="den">%</span></div><div class="cap">AI visibility for <b>wasmer.io</b> — answers that cite or name Wasmer (2 of 8)</div></div>
-    <div class="tile reveal" style="animation-delay:.40s"><div class="num">1.3<span class="den">%</span></div><div class="cap">share of AI voice — <b>wasmer.io</b> holds 1 of the 77 citations captured</div></div>
-    <div class="tile reveal" style="animation-delay:.48s"><div class="word">youtube.com</div><div class="cap">most-cited domain in the niche (4 citations)</div></div>
-  </div>
-
-  <section>
-    <h2>Citation leaderboard — <b>who owns this niche's AI answers</b></h2>
-    <div class="bar-row reveal" style="animation-delay:0.55s" data-tip="youtube.com — cited in 4 of 8 answers">
-        <span class="bar-label">youtube.com</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:100%"></span></span>
-        <span class="bar-value">4</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:0.6100000000000001s" data-tip="arxiv.org — cited in 2 of 8 answers">
-        <span class="bar-label">arxiv.org</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:50%"></span></span>
-        <span class="bar-value">2</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:0.67s" data-tip="dev.to — cited in 2 of 8 answers">
-        <span class="bar-label">dev.to</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:50%"></span></span>
-        <span class="bar-value">2</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:0.73s" data-tip="faculty.washington.edu — cited in 2 of 8 answers">
-        <span class="bar-label">faculty.washington.edu</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:50%"></span></span>
-        <span class="bar-value">2</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:0.79s" data-tip="reddit.com — cited in 2 of 8 answers">
-        <span class="bar-label">reddit.com</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:50%"></span></span>
-        <span class="bar-value">2</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:0.8500000000000001s" data-tip="aws.amazon.com — cited in 1 of 8 answers">
-        <span class="bar-label">aws.amazon.com</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:25%"></span></span>
-        <span class="bar-value">1</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:0.91s" data-tip="eureka.patsnap.com — cited in 1 of 8 answers">
-        <span class="bar-label">eureka.patsnap.com</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:25%"></span></span>
-        <span class="bar-value">1</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:0.97s" data-tip="mikhail.io — cited in 1 of 8 answers">
-        <span class="bar-label">mikhail.io</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:25%"></span></span>
-        <span class="bar-value">1</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:1.03s" data-tip="milvus.io — cited in 1 of 8 answers">
-        <span class="bar-label">milvus.io</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:25%"></span></span>
-        <span class="bar-value">1</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:1.09s" data-tip="peerdh.com — cited in 1 of 8 answers">
-        <span class="bar-label">peerdh.com</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:25%"></span></span>
-        <span class="bar-value">1</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:1.15s" data-tip="soft.xyz — cited in 1 of 8 answers">
-        <span class="bar-label">soft.xyz</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:25%"></span></span>
-        <span class="bar-value">1</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:1.21s" data-tip="auth0.com — cited in 1 of 8 answers">
-        <span class="bar-label">auth0.com</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:25%"></span></span>
-        <span class="bar-value">1</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:1.27s" data-tip="blaxel.ai — cited in 1 of 8 answers">
-        <span class="bar-label">blaxel.ai</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:25%"></span></span>
-        <span class="bar-value">1</span>
-      </div>
-<div class="bar-row reveal" style="animation-delay:1.33s" data-tip="checkthat.ai — cited in 1 of 8 answers">
-        <span class="bar-label">checkthat.ai</span>
-        <span class="bar-track"><span class="bar-fill other" style="--w:25%"></span></span>
-        <span class="bar-value">1</span>
-      </div>
-    <div class="legend reveal" style="animation-delay:.9s"><span class="l-t">wasmer.io (you)</span><span class="l-c">competitor</span><span class="l-o">other sources</span></div>
-  </section>
-
-  <section>
-    <h2>Query ledger — <b>every answer, with proof</b></h2>
-    <div class="scroll"><table>
-      <thead><tr><th>buyer question</th><th>you</th><th>competitors cited</th><th>cited domains</th><th></th></tr></thead>
-      <tbody><tr class="reveal" style="animation-delay:0.7s">
-      <td class="q">“serverless platform with the fastest cold starts”</td>
-      <td><span class="stamp loss">ABSENT</span></td>
-      <td class="mono dim">—</td>
-      <td class="mono dim">arxiv.org, aws.amazon.com, dev.to, eureka.patsnap.com, faculty.washington.edu <span class="more">+4</span></td>
-      <td><a href="shots/q01.png" target="_blank">proof ↗</a></td>
-    </tr>
-<tr class="reveal" style="animation-delay:0.75s">
-      <td class="q">“how to run untrusted or model-generated code securely in production”</td>
-      <td><span class="stamp loss">ABSENT</span></td>
-      <td class="mono dim">—</td>
-      <td class="mono dim">auth0.com, blaxel.ai, checkthat.ai, guidesfor.dev, hopx.ai <span class="more">+5</span></td>
-      <td><a href="shots/q02.png" target="_blank">proof ↗</a></td>
-    </tr>
-<tr class="reveal" style="animation-delay:0.7999999999999999s">
-      <td class="q">“cheapest way to host a wordpress site with autoscaling”</td>
-      <td><span class="stamp loss">ABSENT</span></td>
-      <td class="mono dim">—</td>
-      <td class="mono dim">accuweb.cloud, cloudways.com, digitalocean.com, hostadvice.com, hostinggurureviews.com <span class="more">+3</span></td>
-      <td><a href="shots/q03.png" target="_blank">proof ↗</a></td>
-    </tr>
-<tr class="reveal" style="animation-delay:0.85s">
-      <td class="q">“deploy node.js or python apps to the edge without rewriting code”</td>
-      <td><span class="stamp win">CITED</span></td>
-      <td class="mono dim">vercel.com</td>
-      <td class="mono dim">codeyaan.com, developers.redhat.com, developers.telnyx.com, edgejs.org, freecodecamp.org <span class="more">+8</span></td>
-      <td><a href="shots/q04.png" target="_blank">proof ↗</a></td>
-    </tr>
-<tr class="reveal" style="animation-delay:0.8999999999999999s">
-      <td class="q">“webassembly runtime for server side production workloads”</td>
-      <td><span class="stamp mention">MENTIONED</span></td>
-      <td class="mono dim">—</td>
-      <td class="mono dim">birjob.com, blog.logrocket.com, dev.to, f5.com, infoworld.com <span class="more">+4</span></td>
-      <td><a href="shots/q05.png" target="_blank">proof ↗</a></td>
-    </tr>
-<tr class="reveal" style="animation-delay:0.95s">
-      <td class="q">“alternatives to docker containers using webassembly”</td>
-      <td><span class="stamp loss">ABSENT</span></td>
-      <td class="mono dim">—</td>
-      <td class="mono dim">candede.com, datacamp.com, diva-portal.org, faculty.washington.edu, github.com <span class="more">+4</span></td>
-      <td><a href="shots/q06.png" target="_blank">proof ↗</a></td>
-    </tr>
-<tr class="reveal" style="animation-delay:1s">
-      <td class="q">“best infrastructure to deploy AI agents at scale”</td>
-      <td><span class="stamp loss">ABSENT</span></td>
-      <td class="mono dim">—</td>
-      <td class="mono dim">agentuity.com, bunnyshell.com, defang.io, f6s.com, fast.io <span class="more">+3</span></td>
-      <td><a href="shots/q07.png" target="_blank">proof ↗</a></td>
-    </tr>
-<tr class="reveal" style="animation-delay:1.05s">
-      <td class="q">“serverless hosting that only bills for actual cpu time”</td>
-      <td><span class="stamp loss">ABSENT</span></td>
-      <td class="mono dim">cloudflare.com</td>
-      <td class="mono dim">arxiv.org, blog.cloudflare.com, developers.cloudflare.com, linkedin.com, rafftechnologies.com <span class="more">+6</span></td>
-      <td><a href="shots/q08.png" target="_blank">proof ↗</a></td>
-    </tr></tbody>
-    </table></div>
-  </section>
-
-  <section>
-    <h2>Close the gap — <b>9 live reddit threads asking these exact questions</b></h2>
-    <article class="card reveal" style="animation-delay:0.4s">
-      <header>
-        <span class="sub mono">r/LLMDevs</span>
-        <span class="stamp agent">DRAFTED BY SAI AGENT</span>
-      </header>
-      <h3><a href="https://www.reddit.com/r/LLMDevs/comments/1u0q2yr/serverless_llm_cold_starts_would_these_load_times/" target="_blank">Serverless LLM cold starts: would these load times actually work for you?</a></h3>
-      <p class="why">Poster is evaluating serverless cold-start latency and whether load times are acceptable — the core cold-start question, asked recently (1 month ago). <em>— found for “serverless platform with the fastest cold starts”</em></p>
-      <textarea id="d0" rows="5" spellcheck="false">For LLM workloads the cold start is usually dominated by pulling model weights into memory/VRAM, not the runtime itself — so snapshotting the loaded state, keeping a small warm pool, or memory-mapping weights tends to help more than switching platforms. Separate the runtime startup from the model-load time when you benchmark; they have very different fixes. Disclosure: I work on Wasmer, a WebAssembly runtime where the runtime side of cold start is effectively instant, which helps for lighter functions and tool code around a model, less so for the weight-loading part. Worth measuring both numbers independently before you decide what to optimize.</textarea>
-             <div class="card-actions">
-               <button data-copy="d0">copy draft</button>
-               <span class="hint">human-in-the-loop — review, edit, post yourself. Nothing auto-posts.</span>
-             </div>
-    </article>
-<article class="card reveal" style="animation-delay:0.48000000000000004s">
-      <header>
-        <span class="sub mono">r/nextjs</span>
-        <span class="stamp agent">DRAFTED BY SAI AGENT</span>
-      </header>
-      <h3><a href="https://www.reddit.com/r/nextjs/comments/1r1zlhj/i_measured_vercel_vs_netlify_vs_cloudflare_cold/" target="_blank">I measured Vercel vs Netlify vs Cloudflare cold start timings</a></h3>
-      <p class="why">Direct benchmark comparison of serverless/edge cold starts across major platforms — exactly the fastest-cold-start question with real numbers. <em>— found for “serverless platform with the fastest cold starts”</em></p>
-      <textarea id="d1" rows="5" spellcheck="false">Nice writeup. One thing worth controlling for: Cloudflare Workers use V8 isolates (no per-request container spin-up), while Vercel/Netlify Lambda-style functions pay a real cold start, so you&#39;re partly comparing architectures rather than vendors. Also separate first-byte from full render, and test from multiple regions since edge vs. single-region skews results a lot. Disclosure: I work on Wasmer — WebAssembly is another isolate-style approach where startup is near-instant because there&#39;s no container to boot, similar tradeoff to Workers. If cold start is your top metric, isolate/WASM-based runtimes will generally beat container-based functions regardless of vendor.</textarea>
-             <div class="card-actions">
-               <button data-copy="d1">copy draft</button>
-               <span class="hint">human-in-the-loop — review, edit, post yourself. Nothing auto-posts.</span>
-             </div>
-    </article>
-<article class="card reveal" style="animation-delay:0.56s">
-      <header>
-        <span class="sub mono">r/LangChain</span>
-        <span class="stamp agent">DRAFTED BY SAI AGENT</span>
-      </header>
-      <h3><a href="https://www.reddit.com/r/LangChain/comments/1sh7cuj/i_compared_sandbox_options_for_ai_agents_heres_my/" target="_blank">I compared sandbox options for AI agents. Here&#39;s my ranking.</a></h3>
-      <p class="why">Poster is comparing ways to safely run model-generated/agent code — directly the untrusted-code-in-production question with active discussion. <em>— found for “how to run untrusted or model-generated code securely in production”</em></p>
-      <textarea id="d2" rows="5" spellcheck="false">Good comparison. The main axes I&#39;d weigh: isolation strength (VM/microVM &gt; container &gt; process), startup latency (matters if you spin one up per execution), and blast radius if the code breaks out — plus resource limits and no-network-by-default. Firecracker microVMs and gVisor give strong isolation; plain containers are weaker for genuinely untrusted code. Disclosure: I work on Wasmer, a WebAssembly runtime — WASM is worth a look here because it sandboxes at the module level with capability-based access (no filesystem/network unless granted) and starts in milliseconds, which suits per-execution untrusted code. Tradeoff is your code has to compile to WASM, so it fits some agent workloads better than others.</textarea>
-             <div class="card-actions">
-               <button data-copy="d2">copy draft</button>
-               <span class="hint">human-in-the-loop — review, edit, post yourself. Nothing auto-posts.</span>
-             </div>
-    </article>
-<article class="card reveal" style="animation-delay:0.64s">
-      <header>
-        <span class="sub mono">r/docker</span>
-        <span class="stamp agent">DRAFTED BY SAI AGENT</span>
-      </header>
-      <h3><a href="https://www.reddit.com/r/docker/comments/1tzeliu/are_sandboxes_useful_for_ai_agents_only/" target="_blank">Are sandboxes useful for AI agents only?</a></h3>
-      <p class="why">Recent (1 month ago) thread questioning when/why to sandbox untrusted execution, squarely about running untrusted code securely. <em>— found for “how to run untrusted or model-generated code securely in production”</em></p>
-      <textarea id="d3" rows="5" spellcheck="false">Sandboxes aren&#39;t just for AI agents — any time you execute code you don&#39;t fully trust (user plugins, third-party scripts, CI running forks, model-generated snippets) you want isolation beyond a normal process. Containers help with packaging but share the host kernel, so for genuinely untrusted code people reach for microVMs (Firecracker), gVisor, or WASM. Key controls: no network by default, strict CPU/memory limits, and a small syscall/capability surface. Disclosure: I work on Wasmer, a WebAssembly runtime — WASM gives capability-based isolation with fast startup, which is handy when you&#39;re spinning up a fresh sandbox per execution rather than keeping long-lived containers around.</textarea>
-             <div class="card-actions">
-               <button data-copy="d3">copy draft</button>
-               <span class="hint">human-in-the-loop — review, edit, post yourself. Nothing auto-posts.</span>
-             </div>
-    </article>
-<article class="card reveal" style="animation-delay:0.72s">
-      <header>
-        <span class="sub mono">r/Hosting</span>
-        <span class="stamp agent">DRAFTED BY SAI AGENT</span>
-      </header>
-      <h3><a href="https://www.reddit.com/r/Hosting/comments/1khseij/looking_for_hosting_for_wordpress_that_is/" target="_blank">Looking for Hosting for WordPress that is superfast and cheap (can scale)</a></h3>
-      <p class="why">Asks for cheap WordPress hosting that stays fast and can scale as traffic grows — the cheap-plus-autoscaling combination directly. <em>— found for “cheapest way to host a wordpress site with autoscaling”</em></p>
-      <textarea id="d4" rows="5" spellcheck="false">For &#39;cheap now, scales later,&#39; the biggest cost lever is caching: a good page cache plus a CDN in front means most traffic never hits PHP, so a small instance handles far more than you&#39;d expect. Managed WP hosts (Kinsta, Cloudways) autoscale but get pricey; a $5–10 VPS with proper caching + Cloudflare is the cheap route until you actually need more. Disclosure: I work on Wasmer — we can run WordPress on Wasmer Edge where it scales per-request instead of paying for an always-on box, which can be cheaper than container hosting for bursty traffic. Whatever you pick, nail caching first; it matters more than the host.</textarea>
-             <div class="card-actions">
-               <button data-copy="d4">copy draft</button>
-               <span class="hint">human-in-the-loop — review, edit, post yourself. Nothing auto-posts.</span>
-             </div>
-    </article>
-<article class="card reveal" style="animation-delay:0.8s">
-      <header>
-        <span class="sub mono">r/webhosting</span>
-        <span class="stamp agent">DRAFTED BY SAI AGENT</span>
-      </header>
-      <h3><a href="https://www.reddit.com/r/webhosting/comments/1ks63kp/starting_small_but_thinking_bigwhich_wordpress/" target="_blank">Starting small but thinking big — which WordPress host can scale?</a></h3>
-      <p class="why">Poster wants to start cheap but be able to scale WordPress later — matches the cheapest-with-autoscaling intent. <em>— found for “cheapest way to host a wordpress site with autoscaling”</em></p>
-      <textarea id="d5" rows="5" spellcheck="false">Pick something that lets you grow without a painful migration. Start on an affordable VPS or managed plan, but architect for scale from day one: offload media to object storage (S3/R2), put a CDN in front, use a persistent object cache (Redis), and keep the DB separable so you can move it later. That way &#39;scaling up&#39; is adding resources, not rebuilding. Disclosure: I work on Wasmer — Wasmer Edge runs WordPress with per-request autoscaling, so you don&#39;t pay for idle capacity while small but still absorb spikes. Honestly, though, caching + a CDN + externalized media gets you surprisingly far on almost any host.</textarea>
-             <div class="card-actions">
-               <button data-copy="d5">copy draft</button>
-               <span class="hint">human-in-the-loop — review, edit, post yourself. Nothing auto-posts.</span>
-             </div>
-    </article>
-<article class="card reveal" style="animation-delay:0.88s">
-      <header>
-        <span class="sub mono">r/devops</span>
-        <span class="stamp agent">DRAFTED BY SAI AGENT</span>
-      </header>
-      <h3><a href="https://www.reddit.com/r/devops/comments/1p5aomo/has_anyone_actually_replaced_docker_with_wasm_or/" target="_blank">Has anyone actually replaced Docker with WASM or is it still hype?</a></h3>
-      <p class="why">Directly asks whether WebAssembly can serve as a real Docker-container alternative in practice — the exact topic, asked 8 months ago. <em>— found for “alternatives to docker containers using webassembly”</em></p>
-      <textarea id="d6" rows="5" spellcheck="false">Realistic take: WASM isn&#39;t a wholesale Docker replacement yet, but it already wins for specific slices — fast-starting, isolated, portable workloads like edge functions, plugins, and running untrusted code. It won&#39;t run an arbitrary Linux image unmodified; your code has to compile to WASM (WASI covers a growing set of syscalls). Where it shines is startup time (milliseconds, no image pull) and a smaller attack surface. Disclosure: I work on Wasmer, a WebAssembly runtime + registry, so I&#39;m biased — but I&#39;d frame it as complementing containers rather than replacing them today. Try it on a stateless function or sandboxed-execution use case first; that&#39;s where the tradeoffs pay off.</textarea>
-             <div class="card-actions">
-               <button data-copy="d6">copy draft</button>
-               <span class="hint">human-in-the-loop — review, edit, post yourself. Nothing auto-posts.</span>
-             </div>
-    </article>
-<article class="card reveal" style="animation-delay:0.9600000000000001s">
-      <header>
-        <span class="sub mono">r/AI_Agents</span>
-        <span class="stamp agent">DRAFTED BY SAI AGENT</span>
-      </header>
-      <h3><a href="https://www.reddit.com/r/AI_Agents/comments/1rrj8zr/those_deploying_ai_agents_in_large_organizations/" target="_blank">Those deploying AI agents in large organizations — what infra?</a></h3>
-      <p class="why">Practitioners discussing infrastructure choices for deploying AI agents at organizational scale — directly the question. <em>— found for “best infrastructure to deploy AI agents at scale”</em></p>
-      <textarea id="d7" rows="5" spellcheck="false">A few things that separate demos from scaled deployments: isolate each agent&#39;s tool/code execution (you&#39;re often running model-generated code), make runs stateless and horizontally scalable, add per-run resource limits and timeouts, and centralize observability/tracing since debugging agents is mostly about seeing what they did. Queue-based workers plus autoscaling handles bursty agent traffic well. Disclosure: I work on Wasmer — WebAssembly sandboxing is useful specifically for the code-execution tool step, giving fast, isolated runs per invocation. For the orchestration layer, most teams still lean on standard queue + autoscaling infra. Match the isolation strength to how much you trust the code the agent generates.</textarea>
-             <div class="card-actions">
-               <button data-copy="d7">copy draft</button>
-               <span class="hint">human-in-the-loop — review, edit, post yourself. Nothing auto-posts.</span>
-             </div>
-    </article>
-<article class="card reveal" style="animation-delay:1.04s">
-      <header>
-        <span class="sub mono">r/SaaS</span>
-        <span class="stamp agent">DRAFTED BY SAI AGENT</span>
-      </header>
-      <h3><a href="https://www.reddit.com/r/SaaS/comments/1pisfea/enterprise_ai_infrastructure_whats_actually_hard/" target="_blank">Enterprise AI infrastructure — what&#39;s actually hard about deploying at scale?</a></h3>
-      <p class="why">Discussion of the genuinely hard parts of scaling AI infrastructure, including deploying agents — matches the deploy-at-scale question. <em>— found for “best infrastructure to deploy AI agents at scale”</em></p>
-      <textarea id="d8" rows="5" spellcheck="false">The hard parts are rarely the model — they&#39;re the surrounding infra: safely executing tool/agent-generated code, cost control on bursty and unpredictable load, isolation between tenants, and observability so failures are debuggable. Idle cost is a silent killer, so per-request/autoscaling execution beats always-on boxes for spiky agent traffic. Strong sandboxing matters once agents run code you didn&#39;t write. Disclosure: I work on Wasmer — we focus on the execution layer (WASM sandboxing + edge autoscaling), which addresses the isolation and idle-cost pieces, though you&#39;ll still assemble orchestration, memory, and eval tooling around it. There&#39;s no single &#39;platform&#39; that does it all yet; most teams stitch a few layers together.</textarea>
-             <div class="card-actions">
-               <button data-copy="d8">copy draft</button>
-               <span class="hint">human-in-the-loop — review, edit, post yourself. Nothing auto-posts.</span>
-             </div>
-    </article>
-  </section>
-
-  <footer>
-    scan: simulang drives a dedicated browser through real Perplexity sessions and reads answers via the OS accessibility tree — no selectors, no API.<br>
-    queue: SAI cloud agent research over live reddit (or search fallback, labeled). every reply requires human review — nothing is posted automatically.
-  </footer>
-</main>
-<script>
-  const tip = document.getElementById('tip')
-  document.querySelectorAll('[data-tip]').forEach((el) => {
-    el.addEventListener('mousemove', (e) => {
-      tip.textContent = el.dataset.tip
-      tip.style.display = 'block'
-      tip.style.left = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8) + 'px'
-      tip.style.top = e.clientY + 14 + 'px'
-    })
-    el.addEventListener('mouseleave', () => (tip.style.display = 'none'))
-  })
-  document.querySelectorAll('button[data-copy]').forEach((b) => {
-    b.addEventListener('click', () => {
-      navigator.clipboard.writeText(document.getElementById(b.dataset.copy).value)
-      const old = b.textContent
-      b.textContent = 'copied ✓'
-      setTimeout(() => (b.textContent = old), 1400)
-    })
-  })
-</script>
-</body></html>
+  <footer>github.com/ayushozha/AI-Rank-GTM-Hackathon · pages from /docs on master</footer>
+</body>
+</html>

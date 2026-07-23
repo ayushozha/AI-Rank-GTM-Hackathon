@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Rank — GTM Hackathon</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --page: #0c0c0b; --surface: #161614; --ink: #f4f2ea; --ink-2: #b8b5a6; --muted: #7c7a70;
+    --hairline: #2b2b27; --border: rgba(255,255,255,.08);
+    --target: #3987e5; --competitor: #d95926; --other: #3b3b37;
+    --win: #0ca30c; --loss: #e66767;
+    --serif: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+    --mono: 'Cascadia Mono', Consolas, 'SF Mono', 'Courier New', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+  body { font: 18px/1.55 var(--serif); background: var(--page); color: var(--ink); }
+  section {
+    min-height: 100vh; scroll-snap-align: start; position: relative;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 72px clamp(28px, 8vw, 120px);
+    border-bottom: 1px solid var(--hairline); overflow: hidden;
+  }
+  section::before {
+    content: attr(data-n) " / 5"; position: absolute; top: 28px; right: clamp(28px, 8vw, 120px);
+    font: 12px var(--mono); letter-spacing: .2em; color: var(--muted);
+  }
+  section::after {
+    content: "AI RANK · GTM HACKATHON · 07.22.2026"; position: absolute; bottom: 24px; left: clamp(28px, 8vw, 120px);
+    font: 10px var(--mono); letter-spacing: .24em; color: var(--muted);
+  }
+  .kicker { font: 12px var(--mono); letter-spacing: .3em; text-transform: uppercase; color: var(--target); margin-bottom: 22px; }
+  h1 { font-size: clamp(44px, 7.5vw, 96px); line-height: 1.02; font-weight: 500; letter-spacing: -.015em; max-width: 15ch; }
+  h1 .accent { color: var(--target); font-style: italic; }
+  h2 { font-size: clamp(32px, 5vw, 60px); line-height: 1.08; font-weight: 500; max-width: 18ch; margin-bottom: 30px; }
+  .dek { font-size: clamp(17px, 2vw, 22px); color: var(--ink-2); max-width: 52ch; font-style: italic; margin-top: 22px; }
+  .mono { font-family: var(--mono); }
+
+  .bg-glow { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(900px 460px at 78% 8%, rgba(57,135,229,.12), transparent 60%),
+                radial-gradient(600px 340px at 6% 90%, rgba(217,89,38,.06), transparent 55%); }
+
+  .points { margin-top: 34px; display: grid; gap: 18px; max-width: 760px; }
+  .point { display: grid; grid-template-columns: 44px 1fr; gap: 16px; align-items: baseline; }
+  .point .n { font: 13px var(--mono); color: var(--competitor); }
+  .point p { color: var(--ink-2); font-size: 18px; } .point b { color: var(--ink); font-weight: 500; }
+
+  .pipeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); margin-top: 38px; max-width: 1000px; }
+  @media (max-width: 860px) { .pipeline { grid-template-columns: 1fr 1fr; } }
+  .stage { background: var(--surface); padding: 22px 20px 18px; }
+  .stage .tag { font: 10px var(--mono); letter-spacing: .18em; color: var(--target); text-transform: uppercase; }
+  .stage h3 { font-size: 19px; font-weight: 500; margin: 10px 0 8px; }
+  .stage p { font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
+  .stage.sai .tag { color: var(--competitor); }
+
+  .board { margin-top: 36px; max-width: 900px; display: grid; gap: 14px; }
+  .row { display: grid; grid-template-columns: 190px 1fr 150px; gap: 18px; align-items: center; }
+  @media (max-width: 700px) { .row { grid-template-columns: 1fr; gap: 6px; } }
+  .row .who { font: 15px var(--mono); color: var(--ink-2); text-align: right; }
+  @media (max-width: 700px) { .row .who { text-align: left; } }
+  .row .track { height: 30px; border-left: 1px solid var(--hairline); position: relative; }
+  .row .fill { position: absolute; inset: 6px auto 6px 0; border-radius: 0 4px 4px 0; background: var(--target); box-shadow: 0 0 22px rgba(57,135,229,.3); }
+  .row .fill.zero { background: var(--loss); width: 3px !important; box-shadow: none; }
+  .row .val { font: 600 26px var(--mono); font-variant-numeric: tabular-nums; }
+  .row .val small { display: block; font: 11px var(--mono); color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+  .fact { border: 1px solid var(--border); border-radius: 4px; padding: 10px 16px; font: 13px var(--mono); color: var(--ink-2); }
+  .fact b { color: var(--ink); font-weight: 600; }
+
+  .demo-links { display: grid; gap: 12px; margin-top: 36px; max-width: 640px; }
+  .demo-links a {
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    border: 1px solid var(--border); background: var(--surface); padding: 18px 22px;
+    color: var(--ink); text-decoration: none; font-size: 19px; transition: border-color .15s, transform .15s;
+  }
+  .demo-links a:hover { border-color: var(--target); transform: translateX(6px); }
+  .demo-links .score { font: 600 20px var(--mono); color: var(--target); }
+  .demo-links .score.zero { color: var(--loss); }
+  .checklist { margin-top: 30px; color: var(--ink-2); font-size: 16px; display: grid; gap: 8px; max-width: 62ch; }
+  .checklist span { color: var(--target); font-family: var(--mono); margin-right: 8px; }
+
+  .nav-hint { position: fixed; bottom: 24px; right: 28px; font: 11px var(--mono); letter-spacing: .16em; color: var(--muted); z-index: 5; }
+  .reveal { animation: rise .7s cubic-bezier(.2,.7,.2,1) backwards; }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+  @media (prefers-reduced-motion: reduce) { .reveal { animation: none !important; } }
+</style></head><body>
+
+<section data-n="1" id="s1">
+  <div class="bg-glow"></div>
+  <div class="kicker reveal">AI Rank · built on Simulang + SAI</div>
+  <h1 class="reveal" style="animation-delay:.1s">Does the AI know <span class="accent">you</span> exist?</h1>
+  <p class="dek reveal" style="animation-delay:.2s">SEO tools tell you your Google rank. Nobody tells you your AI rank — until tonight. We measure who AI answer engines actually send your buyers to, and close the loop where it counts.</p>
+</section>
+
+<section data-n="2" id="s2">
+  <div class="kicker">The problem</div>
+  <h2>Your buyers stopped searching. They ask.</h2>
+  <div class="points">
+    <div class="point"><span class="n">01</span><p>Discovery moved to Perplexity, ChatGPT, and AI Overviews — and the AI names <b>three of your competitors</b> while you sit invisible.</p></div>
+    <div class="point"><span class="n">02</span><p>There is <b>no API for the answer surface</b>. What the buyer sees only exists inside a live browser session.</p></div>
+    <div class="point"><span class="n">03</span><p>Tonight we scanned three real companies. <b>Two of them were completely invisible</b> to the AI in their own niche.</p></div>
+  </div>
+</section>
+
+<section data-n="3" id="s3">
+  <div class="kicker">How it works</div>
+  <h2>Measure it. Then fix it.</h2>
+  <div class="pipeline">
+    <div class="stage"><div class="tag">01 · Simulang</div><h3>Live scan</h3><p>A dedicated browser runs your buyers' questions through Perplexity. Simulang reads the answer via the OS accessibility tree — and clicks the sources panel itself. No selectors, no API.</p></div>
+    <div class="stage"><div class="tag">02 · Score</div><h3>AI visibility</h3><p>Per query: are you cited, merely named, or absent? Plus your true share of AI voice — your slice of every citation captured — and the leaderboard of who owns your niche.</p></div>
+    <div class="stage sai"><div class="tag">03 · SAI agent</div><h3>Close the gap</h3><p>For every question you lose, the SAI cloud agent finds the live Reddit thread where it's being asked and drafts a genuinely helpful, disclosed reply. Reddit blocks scripts — SAI drives a real browser.</p></div>
+    <div class="stage"><div class="tag">04 · Human</div><h3>Approve &amp; post</h3><p>Every draft lands in an approval queue with the thread, the why, and a copy button. Nothing auto-posts. Authenticity is the strategy.</p></div>
+  </div>
+</section>
+
+<section data-n="4" id="s4">
+  <div class="kicker">Live results — scanned tonight</div>
+  <h2>21 real AI answers. 183 citations. One pattern.</h2>
+  <div class="board">
+    <div class="row reveal"><span class="who">wasmer.io</span><span class="track"><span class="fill" style="width:25%"></span></span><span class="val">25%<small>visibility · 1 cited + 1 named of 8 · 1.3% share of voice</small></span></div>
+    <div class="row reveal" style="animation-delay:.12s"><span class="who">stackmachine.com</span><span class="track"><span class="fill zero"></span></span><span class="val">0%<small>visibility · 0 of 8 answers · 0 of 73 citations</small></span></div>
+    <div class="row reveal" style="animation-delay:.24s"><span class="who">hijenny.ai</span><span class="track"><span class="fill zero"></span></span><span class="val">0%<small>visibility · 0 of 5 answers · 0 of 33 citations</small></span></div>
+  </div>
+  <div class="facts">
+    <div class="fact"><b>reddit.com</b> is cited by the AI in every niche we scanned</div>
+    <div class="fact"><b>18+</b> SAI-drafted replies queued for human approval</div>
+    <div class="fact">every number has a <b>screenshot receipt</b></div>
+  </div>
+</section>
+
+<section data-n="5" id="s5">
+  <div class="bg-glow"></div>
+  <div class="kicker">Live demo</div>
+  <h2>The report <span class="accent" style="font-style:italic">is</span> the demo.</h2>
+  <div class="demo-links">
+    <a href="./wasmer/" target="_blank"><span>wasmer.io — AI visibility briefing</span><span class="score">25%</span></a>
+    <a href="./stackmachine/" target="_blank"><span>stackmachine.com — AI visibility briefing</span><span class="score zero">0%</span></a>
+    <a href="./wasmer/" target="_blank"><span>hijenny.ai — AI visibility briefing</span><span class="score zero">0%</span></a>
+  </div>
+  <div class="checklist">
+    <div><span>→</span>Verdict headline + visibility score, generated from tonight's live scan</div>
+    <div><span>→</span>Citation leaderboard: who actually owns the niche's AI answers</div>
+    <div><span>→</span>Query ledger with proof screenshots from the Simulang session</div>
+    <div><span>→</span>The SAI-drafted Reddit approval queue — measure, then fix</div>
+  </div>
+</section>
+
+<div class="nav-hint">↑ ↓ · space · click to advance</div>
+<script>
+  const slides = [...document.querySelectorAll('section')]
+  let i = 0
+  const go = (n) => { i = Math.max(0, Math.min(slides.length - 1, n)); slides[i].scrollIntoView() }
+  addEventListener('keydown', (e) => {
+    if (['ArrowDown', 'ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); go(i + 1) }
+    if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(i - 1) }
+  })
+  addEventListener('click', (e) => { if (!e.target.closest('a')) go(i + 1) })
+  const obs = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) i = slides.indexOf(en.target) }), { threshold: 0.6 })
+  slides.forEach((s) => obs.observe(s))
+</script>
+</body></html>
